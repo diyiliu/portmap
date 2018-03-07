@@ -1,13 +1,11 @@
-package com.diyiliu.controller;
+package com.diyiliu.ui.controller;
 
-import com.diyiliu.model.TableProperty;
+import com.diyiliu.support.model.TableProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
 
 /**
  * Description: MainController

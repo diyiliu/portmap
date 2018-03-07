@@ -1,4 +1,4 @@
-package com.diyiliu.model;
+package com.diyiliu.support.model;
 
 /**
  * Description: TableProperty

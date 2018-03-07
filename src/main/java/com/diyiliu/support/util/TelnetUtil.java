@@ -1,8 +1,8 @@
-package com.diyiliu.util;
+package com.diyiliu.support.util;
 
-import com.diyiliu.model.CmdCouple;
-import com.diyiliu.thread.BackMsgThread;
-import com.diyiliu.thread.ExchangeThread;
+import com.diyiliu.support.model.CmdCouple;
+import com.diyiliu.support.thread.BackMsgThread;
+import com.diyiliu.support.thread.ExchangeThread;
 import org.apache.commons.net.telnet.TelnetClient;
 
 import java.io.IOException;
@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Properties;
 import java.util.Queue;
 
 /**
@@ -22,23 +21,20 @@ public class TelnetUtil {
     private String host;
     private int port;
 
+    private String password;
+    private String enPassword;
+
     private BackMsgThread backMsgThread;
     private ExchangeThread exchangeThread;
-
     private TelnetClient client = new TelnetClient();
 
     private Queue<CmdCouple> cmdPool = new LinkedList();
 
-    public TelnetUtil(Properties properties) {
-        this.host = (String) properties.get("host");
-        this.port = Integer.parseInt((String) properties.get("port"));
-
-        cmdPool.add(new CmdCouple((String) properties.get("pw"), ">"));
-        cmdPool.add(new CmdCouple("en", "Password"));
-        cmdPool.add(new CmdCouple((String) properties.get("pw.en"), "#"));
-    }
-
     public void init() {
+        cmdPool.add(new CmdCouple(password, ">"));
+        cmdPool.add(new CmdCouple("en", "Password"));
+        cmdPool.add(new CmdCouple(enPassword, "#"));
+
         try {
             client.connect(host, port);
             InputStream in = client.getInputStream();
@@ -97,5 +93,37 @@ public class TelnetUtil {
     public boolean isAlive() {
 
         return client.isAvailable();
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public void setPort(int port) {
+        this.port = port;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getEnPassword() {
+        return enPassword;
+    }
+
+    public void setEnPassword(String enPassword) {
+        this.enPassword = enPassword;
     }
 }

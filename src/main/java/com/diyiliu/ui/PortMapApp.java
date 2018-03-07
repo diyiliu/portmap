@@ -1,14 +1,14 @@
-package com.diyiliu;
+package com.diyiliu.ui;
 
-import com.diyiliu.controller.MainController;
-import com.diyiliu.service.MainService;
-import com.diyiliu.service.OperateService;
+import com.diyiliu.support.util.SpringUtil;
+import com.diyiliu.ui.controller.MainController;
+import com.diyiliu.ui.service.DataLoadService;
+import com.diyiliu.ui.service.OperateService;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.concurrent.Task;
+import javafx.concurrent.Service;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,22 +21,18 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 /**
- * Description: MainApp
+ * Description: PortMapApp
  * Author: DIYILIU
  * Update: 2018-03-06 10:37
  */
-public class MainApp extends Application {
 
-    private ScrollPane scrollPane;
+public class PortMapApp extends Application {
 
-    private final MainService service = new MainService();
-
-    private final OperateService optService = new OperateService();
-
-    public Parent createContent() throws Exception {
-        FXMLLoader fxmlLoader = new FXMLLoader(ClassLoader.getSystemResource("mainScene.fxml"));
+    public Parent createContent(Service service, Service optService) throws Exception {
+        FXMLLoader fxmlLoader = new FXMLLoader(ClassLoader.getSystemResource("fxml/mainScene.fxml"));
         AnchorPane root = fxmlLoader.load();
-        scrollPane = (ScrollPane) root.lookup("#scrPn");
+        ScrollPane scrollPane = (ScrollPane) root.lookup("#scrPn");
+        scrollPane.setStyle("-fx-background-insets: 0;");
 
         TableView tv = (TableView) scrollPane.getContent();
         tv.getStyleClass().add("no-border");
@@ -51,12 +47,17 @@ public class MainApp extends Application {
         Region veil = new Region();
         veil.setStyle("-fx-background-color: rgba(0,0,0,0.4)");
         veil.setLayoutX(10);
-        veil.setPrefSize(510, 510);
+        veil.setPrefSize(508, 510);
 
         ProgressIndicator p = new ProgressIndicator();
         p.setPrefSize(120, 120);
         p.setLayoutX(200);
         p.setLayoutY(200);
+
+        p.progressProperty().bind(service.progressProperty());
+        veil.visibleProperty().bind(service.runningProperty());
+        p.visibleProperty().bind(service.runningProperty());
+        tv.itemsProperty().bind(service.valueProperty());
 
         // 右侧 遮罩
         Region rVeil = new Region();
@@ -72,11 +73,6 @@ public class MainApp extends Application {
         rp.progressProperty().bind(optService.progressProperty());
         rVeil.visibleProperty().bind(optService.runningProperty());
         rp.visibleProperty().bind(optService.runningProperty());
-
-        p.progressProperty().bind(service.progressProperty());
-        veil.visibleProperty().bind(service.runningProperty());
-        p.visibleProperty().bind(service.runningProperty());
-        tv.itemsProperty().bind(service.valueProperty());
 
         root.getChildren().addAll(veil, p, rVeil, rp);
 
@@ -107,15 +103,19 @@ public class MainApp extends Application {
         return root;
     }
 
-    public static void main(String[] args) {
-
-        launch(args);
+    /**
+     * 显示窗体
+     */
+    public void display() {
+        launch(null);
     }
-
 
     @Override
     public void start(Stage stage) throws Exception {
-        Scene scene = new Scene(createContent());
+        DataLoadService service = SpringUtil.getBean("dataLoadService");
+        OperateService optService = SpringUtil.getBean("operateService");
+
+        Scene scene = new Scene(createContent(service, optService));
         scene.getStylesheets().add("style/main.css");
 
         stage.setTitle("端口映射");

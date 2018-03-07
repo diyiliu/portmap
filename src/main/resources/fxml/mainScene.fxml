@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<AnchorPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml" fx:controller="com.diyiliu.ui.controller.MainController">
+    <children>
+        <ScrollPane id="scrPn" layoutX="10.0" prefHeight="510.0" prefWidth="510.0" hbarPolicy="NEVER" vbarPolicy="AS_NEEDED">
+            <content>
+                <TableView fx:id="tv" onMouseClicked="#onTvMouseClicked" prefHeight="508.0" prefWidth="500.0">
+                    <columns>
+                        <TableColumn id="index" prefWidth="35.0" sortable="false" text="序号" />
+                        <TableColumn id="protocol" prefWidth="65.0" sortable="false" text="协议" />
+                        <TableColumn id="insideHost" prefWidth="125.0" sortable="false" text="内网地址" />
+                        <TableColumn id="insidePort" prefWidth="75.0" sortable="false" text="内网端口" />
+                        <TableColumn id="outsideHost" prefWidth="125.0" sortable="false" text="外网地址" />
+                        <TableColumn id="outsidePort" prefWidth="75.0" sortable="false" text="外网端口" />
+                    </columns>
+                </TableView>
+            </content>
+        </ScrollPane>
+        <Text layoutX="532.0" layoutY="18.0" text="操作" />
+        <GridPane id="gridPn" hgap="10.0" layoutX="512.0" layoutY="28.0" prefHeight="176.0" prefWidth="260.0" vgap="10.0">
+            <padding>
+                <Insets bottom="10.0" left="30.0" right="10.0" />
+            </padding>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" prefWidth="140.0" />
+                <ColumnConstraints hgrow="SOMETIMES" prefWidth="60.0" />
+                <ColumnConstraints />
+            </columnConstraints>
+
+            <children>
+                <Label text="内网" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                <TextField fx:id="tfInsideHost" text="192.168.1." GridPane.columnIndex="0" GridPane.rowIndex="2" />
+                <TextField fx:id="tfInsidePort" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="外网" GridPane.columnIndex="0" GridPane.columnSpan="2" GridPane.rowIndex="3" />
+                <TextField fx:id="tfOutsideHost" text="218.3.247.227" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+                <TextField fx:id="tfOutsidePort" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+
+                <Button fx:id="btnOpt" prefWidth="145.0" text="添加" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+                <Button fx:id="btnRefresh" prefWidth="65.0" text="刷新" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+
+                <Text fx:id="optTip" textAlignment="CENTER" wrappingWidth="210.0" GridPane.columnSpan="2" GridPane.rowIndex="10" />
+            </children>
+
+        </GridPane>
+    </children>
+</AnchorPane>

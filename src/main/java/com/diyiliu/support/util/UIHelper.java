@@ -1,4 +1,4 @@
-package com.diyiliu.util;
+package com.diyiliu.support.util;
 
 import javax.swing.*;
 import java.awt.*;

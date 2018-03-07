@@ -1,9 +1,9 @@
-package com.diyiliu.model;
+package com.diyiliu.support.model;
 
 /**
  * Description: CmdCouple
  * Author: DIYILIU
- * Update: 2018-03-07 09:59
+ * Update: 2018-03-07 13:52
  */
 public class CmdCouple {
 
