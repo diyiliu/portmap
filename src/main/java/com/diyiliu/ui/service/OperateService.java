@@ -1,5 +1,6 @@
 package com.diyiliu.ui.service;
 
+import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.util.TelnetUtil;
 import com.diyiliu.ui.service.task.OperateTask;
 import javafx.concurrent.Service;
@@ -20,8 +21,14 @@ public class OperateService extends Service {
     @Resource
     private TelnetUtil telnetUtil;
 
+    private Pair pair;
+
     @Override
     protected Task createTask() {
-        return new OperateTask(telnetUtil);
+        return new OperateTask(telnetUtil, pair);
+    }
+
+    public void setPair(Pair pair) {
+        this.pair = pair;
     }
 }

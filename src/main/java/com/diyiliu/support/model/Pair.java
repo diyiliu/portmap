@@ -11,6 +11,8 @@ public class Pair implements Comparable<Pair>{
     private Host inside;
     private Host outside;
 
+    private boolean no;
+
     public Host getInside() {
         return inside;
     }
@@ -63,5 +65,13 @@ public class Pair implements Comparable<Pair>{
         buffer.append("netmask").append(" ").append("255.255.255.255");
 
         return  buffer.toString();
+    }
+
+    public boolean isNo() {
+        return no;
+    }
+
+    public void setNo(boolean no) {
+        this.no = no;
     }
 }

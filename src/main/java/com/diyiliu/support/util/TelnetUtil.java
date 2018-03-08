@@ -26,6 +26,9 @@ public class TelnetUtil {
 
     private BackMsgThread backMsgThread;
     private ExchangeThread exchangeThread;
+    private InputStream in;
+    private OutputStream os;
+
     private TelnetClient client = new TelnetClient();
 
     private Queue<CmdCouple> cmdPool = new LinkedList();
@@ -34,11 +37,19 @@ public class TelnetUtil {
         cmdPool.add(new CmdCouple(password, ">"));
         cmdPool.add(new CmdCouple("en", "Password"));
         cmdPool.add(new CmdCouple(enPassword, "#"));
-
         try {
+            // 关闭流
+            if (os != null){
+                os.close();
+            }
+            if (in != null){
+                in.close();
+            }
+
+            // 打开连接
             client.connect(host, port);
-            InputStream in = client.getInputStream();
-            OutputStream os = client.getOutputStream();
+            in = client.getInputStream();
+            os = client.getOutputStream();
 
             backMsgThread = new BackMsgThread(in);
             new Thread(backMsgThread).start();
@@ -54,7 +65,7 @@ public class TelnetUtil {
         }
     }
 
-    public void doRunning(String endFlag, String input){
+    public void doRunning(String endFlag, String input) {
         run(endFlag, input);
         while (isRunning()) {
             try {

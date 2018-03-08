@@ -49,7 +49,7 @@ public class ExchangeThread implements Runnable {
                 content = (String) queue.poll();
                 results.add(content);
 
-                //System.out.println(content);
+                System.out.println(content);
             } else {
                 if (inputList.isEmpty()){
                     write(" ", os);
@@ -60,14 +60,14 @@ public class ExchangeThread implements Runnable {
                     }
                 }else {
                     input = inputList.poll();
-                    //System.out.println("输入:" + input);
+                    System.out.println("输入:" + input);
                     write(input, os);
                 }
             }
 
             if (inputList.isEmpty() && content.contains(endFlag)) {
-                if (!content.contains(input)){
-                    //System.out.println("输入完成!");
+                if (!content.contains(endFlag + " " + input.split(" ")[0])){
+                    System.out.println("输入完成!");
                     live = false;
                     break;
                 }

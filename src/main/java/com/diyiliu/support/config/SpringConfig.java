@@ -1,5 +1,7 @@
 package com.diyiliu.support.config;
 
+import com.diyiliu.support.cache.ICache;
+import com.diyiliu.support.cache.ram.RamCacheProvider;
 import com.diyiliu.support.util.SpringUtil;
 import com.diyiliu.ui.PortMapApp;
 import org.springframework.context.annotation.Bean;
@@ -25,9 +27,36 @@ public class SpringConfig {
         return new SpringUtil();
     }
 
+    /**
+     * 主界面窗体
+     *
+     * @return
+     */
     @Bean(initMethod = "display")
     public PortMapApp portMapApp(){
 
         return new PortMapApp();
     }
+
+
+    /**
+     * 内网映射缓存
+     *
+     * @return
+    @Bean
+    public ICache insideCacheProvider() {
+
+        return new RamCacheProvider();
+    }*/
+
+
+    /**
+     * 外网映射缓存
+     *
+     * @return
+    @Bean
+    public ICache outsideCacheProvider() {
+
+        return new RamCacheProvider();
+    }*/
 }

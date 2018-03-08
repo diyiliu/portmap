@@ -1,11 +1,16 @@
 package com.diyiliu.ui.controller;
 
+import com.diyiliu.support.model.Host;
+import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.model.TableProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.swing.*;
 
 /**
  * Description: MainController
@@ -17,6 +22,9 @@ public class MainController {
 
     @FXML
     private TableView tv;
+
+    @FXML
+    private ComboBox cbxProtocol;
 
     @FXML
     private Button btnOpt;
@@ -39,18 +47,6 @@ public class MainController {
     @FXML
     private Text optTip;
 
-
-    public void optHandle(){
-/*        Alert.AlertType type = Alert.AlertType.INFORMATION;
-        Alert alert = new Alert(type, "");
-        alert.initModality(Modality.APPLICATION_MODAL);
-        alert.initOwner(stage);
-        alert.getDialogPane().setContentText(type + " text.");
-        alert.getDialogPane().setHeaderText(null);
-        alert.showAndWait()
-                .filter(response -> response == ButtonType.OK)
-                .ifPresent(response -> System.out.println("The alert was approved"));*/
-    }
 
     public void onTvMouseClicked(MouseEvent e) {
         MouseButton mb = e.getButton();
@@ -86,6 +82,9 @@ public class MainController {
         TableProperty property = (TableProperty) tv.getItems().get(tp.getRow());
         setDetail(property.getInsideHost(), property.getInsidePort(),
                 property.getOutsideHost(), property.getOutsidePort());
+
+        String protocol = property.getProtocol();
+        cbxProtocol.getSelectionModel().select(protocol);
     }
 
     public void setDetail(String insideHost, String insidePort, String outsideHost, String outsidePort) {
@@ -105,5 +104,34 @@ public class MainController {
 
     public Text getOptTip() {
         return optTip;
+    }
+
+    public ComboBox getCbxProtocol() {
+        return cbxProtocol;
+    }
+
+    public Pair getPair(){
+
+        String inIp = tfInsideHost.getText().trim();
+        String inPort = tfInsidePort.getText().trim();
+        String outIp = tfOutsideHost.getText().trim();
+        String outPort = tfOutsidePort.getText().trim();
+
+        if (StringUtils.isBlank(inIp) || StringUtils.isBlank(inPort) ||
+                StringUtils.isBlank(outIp) || StringUtils.isBlank(outPort)) {
+
+            return null;
+        }
+
+        String protocol = (String) cbxProtocol.getSelectionModel().getSelectedItem();
+        Host inHost = new Host(inIp, inPort);
+        Host outHost = new Host(outIp, outPort);
+
+        Pair pair = new Pair();
+        pair.setProtocol(protocol);
+        pair.setInside(inHost);
+        pair.setOutside(outHost);
+
+        return pair;
     }
 }

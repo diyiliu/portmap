@@ -1,5 +1,6 @@
 package com.diyiliu.ui.service.task;
 
+import com.diyiliu.support.config.Constant;
 import com.diyiliu.support.model.Host;
 import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.model.TableProperty;
@@ -27,14 +28,21 @@ public class DataLoadTask extends TelnetTask {
     @Override
     protected ObservableList call() {
         List<Pair> pairList = getList();
-
         ObservableList list = FXCollections.observableArrayList();
 
+        Constant.insideCacheProvider.clear();
+        Constant.outsideCacheProvider.clear();
         for (int i = 0; i < pairList.size(); i++) {
             Pair pair = pairList.get(i);
             list.add(new TableProperty(i + 1, pair.getProtocol(),
                     pair.getInside().getIp(), pair.getInside().getPort(),
                     pair.getOutside().getIp(), pair.getOutside().getPort()));
+
+            String in = pair.getInside().getIp()+ ":" + pair.getInside().getPort();
+            Constant.insideCacheProvider.put(in, pair);
+
+            String out = pair.getOutside().getIp()+ ":" + pair.getOutside().getPort();
+            Constant.outsideCacheProvider.put(out, pair);
         }
 
         return list;
