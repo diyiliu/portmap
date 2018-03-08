@@ -44,6 +44,7 @@ public class PortMapApp extends Application {
 
         TableView tv = (TableView) scrollPane.getContent();
         tv.getStyleClass().add("no-border");
+        tv.placeholderProperty().setValue(new Text("加载中..."));
 
         ObservableList<TableColumn> tvColumns = tv.getColumns();
         for (int i = 0; i < tvColumns.size(); i++) {
