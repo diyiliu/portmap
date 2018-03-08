@@ -14,7 +14,7 @@ public abstract class TelnetTask extends Task<ObservableList> {
 
 
     protected void doRunning(String endFlag, String input) {
-        if (!telnetUtil.isAlive()) {
+        if (!telnetUtil.isOK()){
             telnetUtil.init();
         }
 

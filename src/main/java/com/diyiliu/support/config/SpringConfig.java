@@ -1,7 +1,5 @@
 package com.diyiliu.support.config;
 
-import com.diyiliu.support.cache.ICache;
-import com.diyiliu.support.cache.ram.RamCacheProvider;
 import com.diyiliu.support.util.SpringUtil;
 import com.diyiliu.ui.PortMapApp;
 import org.springframework.context.annotation.Bean;

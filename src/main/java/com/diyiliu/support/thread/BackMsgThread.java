@@ -16,6 +16,10 @@ public class BackMsgThread implements Runnable{
 
     private InputStream inputStream;
 
+    public BackMsgThread() {
+
+    }
+
     public BackMsgThread(InputStream inputStream) {
         this.inputStream = inputStream;
     }
@@ -40,5 +44,9 @@ public class BackMsgThread implements Runnable{
     public Queue getBackMsg(){
 
         return queue;
+    }
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
     }
 }

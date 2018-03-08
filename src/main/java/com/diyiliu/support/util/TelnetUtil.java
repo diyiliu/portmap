@@ -28,13 +28,13 @@ public class TelnetUtil {
     private String password;
     private String enPassword;
 
-    private BackMsgThread backMsgThread;
-    private ExchangeThread exchangeThread;
     private InputStream in;
     private OutputStream os;
 
-    private TelnetClient client = new TelnetClient();
+    private BackMsgThread backMsgThread = new BackMsgThread();
+    private ExchangeThread exchangeThread = new ExchangeThread();
 
+    private TelnetClient client = new TelnetClient();
     private Queue<CmdCouple> cmdPool = new LinkedList();
 
     public void init() {
@@ -49,10 +49,10 @@ public class TelnetUtil {
             in = client.getInputStream();
             os = client.getOutputStream();
 
-            backMsgThread = new BackMsgThread(in);
+            backMsgThread.setInputStream(in);
             new Thread(backMsgThread).start();
 
-            exchangeThread = new ExchangeThread(os);
+            exchangeThread.setOs(os);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -64,12 +64,14 @@ public class TelnetUtil {
     }
 
     public void doRunning(String endFlag, String input) {
-        run(endFlag, input);
-        while (isRunning()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        synchronized (this) {
+            run(endFlag, input);
+            while (isRunning()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -78,9 +80,10 @@ public class TelnetUtil {
         exchangeThread.setQueue(backMsgThread.getBackMsg());
         exchangeThread.setEndFlag(endFlag);
         exchangeThread.setInputValue(value);
+        // 手动设置启动(线程启动不同步)
+        exchangeThread.setLive(true);
 
         new Thread(exchangeThread).start();
-        exchangeThread.setLive(true);
     }
 
     public List<String> getResults() {
@@ -90,7 +93,6 @@ public class TelnetUtil {
 
 
     public boolean isRunning() {
-
         if (exchangeThread != null) {
 
             return exchangeThread.isLive();
@@ -99,10 +101,11 @@ public class TelnetUtil {
         return false;
     }
 
-    public boolean isAlive() {
+    public boolean isOK() {
 
-        return client.isAvailable();
+        return client.isConnected() && client.isAvailable();
     }
+
 
     public String getHost() {
         return host;
@@ -134,9 +137,5 @@ public class TelnetUtil {
 
     public void setEnPassword(String enPassword) {
         this.enPassword = enPassword;
-    }
-
-    public TelnetClient getClient() {
-        return client;
     }
 }

@@ -22,15 +22,8 @@ public class ExchangeThread implements Runnable {
     private Queue queue;
     private String endFlag;
 
-    public ExchangeThread(OutputStream os) {
-        this.os = os;
-    }
+    public ExchangeThread() {
 
-    public ExchangeThread(OutputStream os, String input, Queue queue, String endFlag) {
-        this.os = os;
-        this.input = input;
-        this.queue = queue;
-        this.endFlag = endFlag;
     }
 
     private List<String> results = new ArrayList<>();
@@ -91,10 +84,6 @@ public class ExchangeThread implements Runnable {
         }
     }
 
-    public void setLive(boolean live) {
-        this.live = live;
-    }
-
     public void setInputValue(String input) {
         this.input = input;
     }
@@ -107,6 +96,11 @@ public class ExchangeThread implements Runnable {
         this.endFlag = endFlag;
     }
 
+
+    public void setOs(OutputStream os) {
+        this.os = os;
+    }
+
     /**
      * 写入命令方法
      *
@@ -117,6 +111,10 @@ public class ExchangeThread implements Runnable {
             cmd += "\n";
             os.write(cmd.getBytes());
             os.flush();
+    }
+
+    public void setLive(boolean live) {
+        this.live = live;
     }
 
     public boolean isLive() {
