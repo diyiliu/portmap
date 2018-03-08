@@ -18,6 +18,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
@@ -121,8 +122,12 @@ public class PortMapApp extends Application {
             if (pair.isNo() || optCheck(pair, stage)) {
                 optService.setPair(pair);
 
-                String msg = "删除 " + pair.getInside().getIp() + " " + pair.getInside().getPort() + " 外网映射?";
-                alertTip(msg, Alert.AlertType.CONFIRMATION, stage, optService);
+                if (pair.isNo()){
+                    String msg = "删除 " + pair.getInside().getIp() + " " + pair.getInside().getPort() + " 外网映射?";
+                    alertTip(msg, Alert.AlertType.CONFIRMATION, stage, optService);
+                }else {
+                    optService.restart();
+                }
             }
         });
 
@@ -164,6 +169,7 @@ public class PortMapApp extends Application {
         scene.getStylesheets().add("style/main.css");
 
         stage.setTitle("端口映射");
+        stage.getIcons().add(new Image(ClassLoader.getSystemResourceAsStream("image/防火墙.png")));
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

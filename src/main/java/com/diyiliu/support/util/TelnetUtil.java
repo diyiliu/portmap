@@ -4,6 +4,8 @@ import com.diyiliu.support.model.CmdCouple;
 import com.diyiliu.support.thread.BackMsgThread;
 import com.diyiliu.support.thread.ExchangeThread;
 import org.apache.commons.net.telnet.TelnetClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,6 +20,8 @@ import java.util.Queue;
  * Update: 2017-08-17 09:49
  */
 public class TelnetUtil {
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
     private String host;
     private int port;
 
@@ -34,18 +38,12 @@ public class TelnetUtil {
     private Queue<CmdCouple> cmdPool = new LinkedList();
 
     public void init() {
+        logger.info("初始化连接...");
+
         cmdPool.add(new CmdCouple(password, ">"));
         cmdPool.add(new CmdCouple("en", "Password"));
         cmdPool.add(new CmdCouple(enPassword, "#"));
         try {
-            // 关闭流
-            if (os != null){
-                os.close();
-            }
-            if (in != null){
-                in.close();
-            }
-
             // 打开连接
             client.connect(host, port);
             in = client.getInputStream();
@@ -136,5 +134,9 @@ public class TelnetUtil {
 
     public void setEnPassword(String enPassword) {
         this.enPassword = enPassword;
+    }
+
+    public TelnetClient getClient() {
+        return client;
     }
 }

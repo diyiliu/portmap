@@ -1,5 +1,8 @@
 package com.diyiliu.support.thread;
 
+import com.diyiliu.support.util.SpringUtil;
+import com.diyiliu.support.util.TelnetUtil;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -44,32 +47,45 @@ public class ExchangeThread implements Runnable {
 
         String input = "";
         String content = "";
-        while (true) {
-            if (!queue.isEmpty()) {
-                content = (String) queue.poll();
-                results.add(content);
+        boolean flag = true;
+        while (flag) {
+            try {
+                if (!queue.isEmpty()) {
+                    content = (String) queue.poll();
+                    results.add(content);
 
-                System.out.println(content);
-            } else {
-                if (inputList.isEmpty()){
-                    write(" ", os);
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                    System.out.println(content);
+                } else {
+                    if (inputList.isEmpty()){
+                        write(" ", os);
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }else {
+                        input = inputList.poll();
+                        System.out.println("输入:" + input);
+                        write(input, os);
                     }
-                }else {
-                    input = inputList.poll();
-                    System.out.println("输入:" + input);
-                    write(input, os);
                 }
-            }
 
-            if (inputList.isEmpty() && content.contains(endFlag)) {
-                if (!content.contains(endFlag + " " + input.split(" ")[0])){
-                    System.out.println("输入完成!");
-                    live = false;
-                    break;
+                if (inputList.isEmpty() && content.contains(endFlag)) {
+                    if (!content.contains(endFlag + " " + input.split(" ")[0])){
+                        System.out.println("输入完成!");
+                        live = false;
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+                flag = false;
+                try {
+                    TelnetUtil telnetUtil = SpringUtil.getBean("telnetUtil");
+                    telnetUtil.init();
+                    telnetUtil.run(endFlag, input);
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             }
         }
@@ -97,14 +113,10 @@ public class ExchangeThread implements Runnable {
      * @param cmd
      * @param os
      */
-    public void write(String cmd, OutputStream os) {
-        try {
+    public void write(String cmd, OutputStream os) throws IOException{
             cmd += "\n";
             os.write(cmd.getBytes());
             os.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     public boolean isLive() {
