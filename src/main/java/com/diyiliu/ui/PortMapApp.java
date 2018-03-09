@@ -123,10 +123,10 @@ public class PortMapApp extends Application {
             if (pair.isNo() || optCheck(pair, stage)) {
                 optService.setPair(pair);
 
-                if (pair.isNo()){
+                if (pair.isNo()) {
                     String msg = "删除 " + pair.getInside().getIp() + " " + pair.getInside().getPort() + " 外网映射?";
                     alertTip(msg, Alert.AlertType.CONFIRMATION, stage, optService);
-                }else {
+                } else {
                     optService.restart();
                 }
             }
@@ -134,14 +134,14 @@ public class PortMapApp extends Application {
 
         optService.valueProperty().addListener((ObservableValue observable,
                                                 Object oldValue, Object newValue) -> {
-            if (newValue != null){
+            if (newValue != null) {
                 ObservableList<MappingResult> list = (ObservableList) newValue;
-                if (list.size() > 0){
+                if (list.size() > 0) {
                     MappingResult result = list.get(0);
-                    if (result.getResult() == 0){
+                    if (result.getResult() == 0) {
 
                         alertException("操作失败!", result.getMessage(), stage);
-                    }else {
+                    } else {
                         controller.resetDetail();
                         alertTip("操作成功, 更新映射端口?", Alert.AlertType.CONFIRMATION, stage, service);
                     }
@@ -158,7 +158,7 @@ public class PortMapApp extends Application {
      * 显示窗体
      */
     public void display() {
-        launch(null);
+        launch(new String[0]);
     }
 
     @Override

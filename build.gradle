@@ -25,3 +25,43 @@ dependencies {
 
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+// 打包jar 主函数
+jar {
+    archiveName = 'portmap.jar'
+
+    manifest {
+        attributes(
+                'Main-Class': 'com.diyiliu.Main'
+        )
+    }
+
+    // '胖'打包（包含所有jar）
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.2'
+    }
+}
+
+apply plugin: 'com.github.johnrengelman.shadow'
+
+shadowJar {
+    baseName = 'portmap'
+    classifier = null
+    version = null
+    mergeServiceFiles('META-INF/spring.*')
+}

@@ -63,20 +63,21 @@ public class TelnetUtil {
         }
     }
 
-    public void doRunning(String endFlag, String input) {
-        synchronized (this) {
-            run(endFlag, input);
+    public synchronized void doRunning(String endFlag, String input) {
+        try {
             while (isRunning()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Thread.sleep(1000);
             }
+            run(endFlag, input);
+            while (isOver()) {
+                Thread.sleep(1000);
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
-    public void run(String endFlag, String value) {
+    private void run(String endFlag, String value) {
         exchangeThread.setQueue(backMsgThread.getBackMsg());
         exchangeThread.setEndFlag(endFlag);
         exchangeThread.setInputValue(value);
@@ -96,6 +97,16 @@ public class TelnetUtil {
         if (exchangeThread != null) {
 
             return exchangeThread.isLive();
+        }
+
+        return false;
+    }
+
+
+    public boolean isOver() {
+        if (exchangeThread != null) {
+
+            return exchangeThread.isFlag();
         }
 
         return false;

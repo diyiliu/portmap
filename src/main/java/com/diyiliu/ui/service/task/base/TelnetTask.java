@@ -14,17 +14,17 @@ public abstract class TelnetTask extends Task<ObservableList> {
 
 
     protected void doRunning(String endFlag, String input) {
-        if (!telnetUtil.isOK()){
+        if (!telnetUtil.isOK()) {
             telnetUtil.init();
         }
 
-        telnetUtil.run(endFlag, input);
-        while (telnetUtil.isRunning()) {
-            try {
+        telnetUtil.doRunning(endFlag, input);
+        try {
+            while (telnetUtil.isRunning()) {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 }
