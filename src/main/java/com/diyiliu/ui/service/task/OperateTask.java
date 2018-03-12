@@ -1,5 +1,6 @@
 package com.diyiliu.ui.service.task;
 
+import com.diyiliu.support.model.CmdCouple;
 import com.diyiliu.support.model.MappingResult;
 import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.util.TelnetUtil;
@@ -31,10 +32,11 @@ public class OperateTask extends TelnetTask {
     }
 
     public MappingResult toMapping() {
-        doRunning("#", "conf t");
-        doRunning("#", "int e0/0");
-        doRunning("#", pair.isNo() ? "no " + pair.toString() : pair.toString());
+        CmdCouple[] couples = new CmdCouple[]{new CmdCouple("conf t", "#"),
+                new CmdCouple("int e0/0", "#"),
+                new CmdCouple(pair.isNo() ? "no " + pair.toString() : pair.toString(), "#")};
 
+        doRunning(couples);
         MappingResult mr = new MappingResult();
         List<String> list = telnetUtil.getResults();
         for (String rs : list) {
@@ -46,7 +48,7 @@ public class OperateTask extends TelnetTask {
             }
         }
 
-        doRunning("#", "wr");
+        doRunning(new CmdCouple[]{new CmdCouple("wr", "#")});
         list = telnetUtil.getResults();
         for (String rs : list) {
             if (rs.contains("OK")) {

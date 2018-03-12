@@ -14,7 +14,7 @@ public abstract class TelnetTask extends Task<ObservableList> {
     protected TelnetUtil telnetUtil;
 
 
-    protected void doRunning(String endFlag, String input) {
+    protected void doRunning(CmdCouple[] cmdCouples) {
         if (!telnetUtil.isOK()) {
             telnetUtil.init();
         }
@@ -24,7 +24,7 @@ public abstract class TelnetTask extends Task<ObservableList> {
                 Thread.sleep(1000);
             }
 
-            telnetUtil.doRunning(new CmdCouple[]{new CmdCouple(input, endFlag)});
+            telnetUtil.doRunning(cmdCouples);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

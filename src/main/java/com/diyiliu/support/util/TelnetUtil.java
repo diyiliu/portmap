@@ -26,9 +26,6 @@ public class TelnetUtil {
     private String host;
     private int port;
 
-    private String password;
-    private String enPassword;
-
     private InputStream in;
     private OutputStream os;
 
@@ -38,12 +35,30 @@ public class TelnetUtil {
     private TelnetClient client = new TelnetClient();
     private CmdCouple[] cmdPool;
 
-    public void init() {
-        logger.info("初始化连接...");
+    public TelnetUtil(String host, int port, String password, String enPassword) {
+        this.host = host;
+        this.port = port;
 
         cmdPool = new CmdCouple[]{new CmdCouple(password, ">"),
                 new CmdCouple("en", "Password"),
                 new CmdCouple(enPassword, "#")};
+    }
+
+    /**
+     * 初始化登录操作
+     */
+    public void init(){
+        // 建立连接
+        connect();
+        // 账号登录
+        login();
+    }
+
+    /**
+     * 建立Telnet 连接
+     */
+    public void connect() {
+        logger.info("建立Telnet连接...");
 
         try {
             // 打开连接
@@ -58,9 +73,17 @@ public class TelnetUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * 登录防火墙
+     */
+    public void login(){
+        logger.info("登录防火墙...");
 
         doRunning(cmdPool);
     }
+
 
     public synchronized void doRunning(CmdCouple[] cmdCouples) {
         try {
@@ -76,7 +99,7 @@ public class TelnetUtil {
         }
     }
 
-    private void run(Queue outQueue) {
+    public void run(Queue outQueue) {
         exchangeThread.setInQueue(backMsgThread.getBackMsg());
         exchangeThread.setOutQueue(outQueue);
 
@@ -104,39 +127,6 @@ public class TelnetUtil {
     public boolean isOK() {
 
         return client.isConnected() && client.isAvailable();
-    }
-
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getEnPassword() {
-        return enPassword;
-    }
-
-    public void setEnPassword(String enPassword) {
-        this.enPassword = enPassword;
     }
 
     public CmdCouple[] getCmdPool() {

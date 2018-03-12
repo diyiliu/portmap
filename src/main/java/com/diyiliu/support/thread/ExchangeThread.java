@@ -20,6 +20,9 @@ public class ExchangeThread implements Runnable {
     // 输出队列
     private Queue<CmdCouple> outQueue;
 
+    // 备份
+    private Queue<CmdCouple> backUpQueue = new LinkedList();
+
     // 收到返回结果队列
     private Queue<String> inQueue;
 
@@ -34,6 +37,7 @@ public class ExchangeThread implements Runnable {
 
     @Override
     public void run() {
+        backUpQueue.clear();
         results.clear();
         live = true;
 
@@ -59,6 +63,8 @@ public class ExchangeThread implements Runnable {
                         }
                     } else {
                         couple = outQueue.poll();
+                        backUpQueue.add(couple);
+
                         cmd = couple.getCmd();
 
                         System.out.println("输入:" + cmd);
@@ -66,7 +72,6 @@ public class ExchangeThread implements Runnable {
                         point = false;
                     }
                 }
-
 
                 if (!point) {
                     String endFlag = couple.getEndFlag();
@@ -89,20 +94,22 @@ public class ExchangeThread implements Runnable {
             e.printStackTrace();
             try {
                 TelnetUtil telnetUtil = SpringUtil.getBean("telnetUtil");
+                telnetUtil.connect();
 
                 CmdCouple[] couples = telnetUtil.getCmdPool();
                 Queue<CmdCouple> queue = new LinkedList();
+                // 登录指令
                 queue.addAll(Arrays.asList(couples));
+                // 操作指令
+                queue.addAll(backUpQueue);
                 queue.addAll(outQueue);
 
-                couples = queue.toArray(new CmdCouple[queue.size()]);
-                telnetUtil.doRunning(couples);
+                telnetUtil.run(queue);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
         }
     }
-
 
     public void setOutQueue(Queue<CmdCouple> outQueue) {
         this.outQueue = outQueue;

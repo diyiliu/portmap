@@ -12,10 +12,10 @@
     <context:property-placeholder location="classpath:config.properties"/>
 
     <!-- telnet 工具 -->
-    <bean id="telnetUtil" class="com.diyiliu.support.util.TelnetUtil">
-        <property name="host" value="${host}"/>
-        <property name="port" value="${port}"/>
-        <property name="password" value="${pw}"/>
-        <property name="enPassword" value="${pw.en}"/>
+    <bean id="telnetUtil" class="com.diyiliu.support.util.TelnetUtil" init-method="init">
+        <constructor-arg  name="host" value="${host}"/>
+        <constructor-arg  name="port" value="${port}"/>
+        <constructor-arg  name="password" value="${pw}"/>
+        <constructor-arg  name="enPassword" value="${pw.en}"/>
     </bean>
 </beans>

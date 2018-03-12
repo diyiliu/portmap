@@ -1,6 +1,7 @@
 package com.diyiliu.ui.service.task;
 
 import com.diyiliu.support.config.Constant;
+import com.diyiliu.support.model.CmdCouple;
 import com.diyiliu.support.model.Host;
 import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.model.TableProperty;
@@ -38,10 +39,10 @@ public class DataLoadTask extends TelnetTask {
                     pair.getInside().getIp(), pair.getInside().getPort(),
                     pair.getOutside().getIp(), pair.getOutside().getPort()));
 
-            String in = pair.getInside().getIp()+ ":" + pair.getInside().getPort();
+            String in = pair.getInside().getIp() + ":" + pair.getInside().getPort();
             Constant.insideCacheProvider.put(in, pair);
 
-            String out = pair.getOutside().getIp()+ ":" + pair.getOutside().getPort();
+            String out = pair.getOutside().getIp() + ":" + pair.getOutside().getPort();
             Constant.outsideCacheProvider.put(out, pair);
         }
 
@@ -49,7 +50,7 @@ public class DataLoadTask extends TelnetTask {
     }
 
     public List<Pair> getList() {
-        doRunning("#", "sh ru");
+        doRunning(new CmdCouple[]{new CmdCouple("sh ru", "#")});
 
         List list = telnetUtil.getResults();
         List<Pair> pairList = toListPair(list);
