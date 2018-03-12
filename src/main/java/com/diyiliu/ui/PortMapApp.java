@@ -27,6 +27,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Description: PortMapApp
@@ -71,8 +72,8 @@ public class PortMapApp extends Application {
         // 右侧 遮罩
         Region rVeil = new Region();
         rVeil.setStyle("-fx-background-color: rgba(0,0,0,0.4)");
-        rVeil.setLayoutX(510);
-        rVeil.setPrefSize(270, 510);
+        rVeil.setLayoutX(520);
+        rVeil.setPrefSize(260, 510);
 
         ProgressBar rp = new ProgressBar();
         rp.setPrefSize(120, 10);
@@ -263,9 +264,12 @@ public class PortMapApp extends Application {
      * @param msg
      */
     public void showTip(Text t, String msg) {
-        t.setText(msg);
-        new Timeline(new KeyFrame(Duration.millis(2500),
-                e -> t.setText(""))
-        ).play();
+        String content = t.getText();
+        if (StringUtils.isBlank(content)) {
+            t.setText(msg);
+            new Timeline(new KeyFrame(Duration.millis(2500),
+                    e -> t.setText(""))
+            ).play();
+        }
     }
 }
