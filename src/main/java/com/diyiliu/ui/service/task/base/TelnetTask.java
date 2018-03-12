@@ -1,5 +1,6 @@
 package com.diyiliu.ui.service.task.base;
 
+import com.diyiliu.support.model.CmdCouple;
 import com.diyiliu.support.util.TelnetUtil;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -18,11 +19,12 @@ public abstract class TelnetTask extends Task<ObservableList> {
             telnetUtil.init();
         }
 
-        telnetUtil.doRunning(endFlag, input);
         try {
             while (telnetUtil.isRunning()) {
                 Thread.sleep(1000);
             }
+
+            telnetUtil.doRunning(new CmdCouple[]{new CmdCouple(input, endFlag)});
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

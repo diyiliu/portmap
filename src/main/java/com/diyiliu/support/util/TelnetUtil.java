@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -35,14 +36,15 @@ public class TelnetUtil {
     private ExchangeThread exchangeThread = new ExchangeThread();
 
     private TelnetClient client = new TelnetClient();
-    private Queue<CmdCouple> cmdPool = new LinkedList();
+    private CmdCouple[] cmdPool;
 
     public void init() {
         logger.info("初始化连接...");
 
-        cmdPool.add(new CmdCouple(password, ">"));
-        cmdPool.add(new CmdCouple("en", "Password"));
-        cmdPool.add(new CmdCouple(enPassword, "#"));
+        cmdPool = new CmdCouple[]{new CmdCouple(password, ">"),
+                new CmdCouple("en", "Password"),
+                new CmdCouple(enPassword, "#")};
+
         try {
             // 打开连接
             client.connect(host, port);
@@ -57,19 +59,16 @@ public class TelnetUtil {
             e.printStackTrace();
         }
 
-        while (!cmdPool.isEmpty()) {
-            CmdCouple couple = cmdPool.poll();
-            doRunning(couple.getEndFlag(), couple.getCmd());
-        }
+        doRunning(cmdPool);
     }
 
-    public synchronized void doRunning(String endFlag, String input) {
+    public synchronized void doRunning(CmdCouple[] cmdCouples) {
         try {
+            Queue couples = new LinkedList();
+            couples.addAll(Arrays.asList(cmdCouples));
+
+            run(couples);
             while (isRunning()) {
-                Thread.sleep(1000);
-            }
-            run(endFlag, input);
-            while (isOver()) {
                 Thread.sleep(1000);
             }
         } catch (InterruptedException e) {
@@ -77,10 +76,10 @@ public class TelnetUtil {
         }
     }
 
-    private void run(String endFlag, String value) {
-        exchangeThread.setQueue(backMsgThread.getBackMsg());
-        exchangeThread.setEndFlag(endFlag);
-        exchangeThread.setInputValue(value);
+    private void run(Queue outQueue) {
+        exchangeThread.setInQueue(backMsgThread.getBackMsg());
+        exchangeThread.setOutQueue(outQueue);
+
         // 手动设置启动(线程启动不同步)
         exchangeThread.setLive(true);
 
@@ -97,16 +96,6 @@ public class TelnetUtil {
         if (exchangeThread != null) {
 
             return exchangeThread.isLive();
-        }
-
-        return false;
-    }
-
-
-    public boolean isOver() {
-        if (exchangeThread != null) {
-
-            return exchangeThread.isFlag();
         }
 
         return false;
@@ -148,5 +137,9 @@ public class TelnetUtil {
 
     public void setEnPassword(String enPassword) {
         this.enPassword = enPassword;
+    }
+
+    public CmdCouple[] getCmdPool() {
+        return cmdPool;
     }
 }

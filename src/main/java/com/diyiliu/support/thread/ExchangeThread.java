@@ -1,14 +1,12 @@
 package com.diyiliu.support.thread;
 
+import com.diyiliu.support.model.CmdCouple;
 import com.diyiliu.support.util.SpringUtil;
 import com.diyiliu.support.util.TelnetUtil;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Description: ExchangeThread
@@ -17,10 +15,14 @@ import java.util.Queue;
  */
 public class ExchangeThread implements Runnable {
 
+
     private OutputStream os;
-    private String input;
-    private Queue queue;
-    private String endFlag;
+    // 输出队列
+    private Queue<CmdCouple> outQueue;
+
+    // 收到返回结果队列
+    private Queue<String> inQueue;
+
 
     public ExchangeThread() {
 
@@ -29,28 +31,26 @@ public class ExchangeThread implements Runnable {
     private List<String> results = new ArrayList<>();
 
     private boolean live = false;
-    private boolean flag = false;
 
     @Override
     public void run() {
         results.clear();
         live = true;
-        flag = true;
 
-        LinkedList<String> inputList = new LinkedList();
-        inputList.add(input);
-
-        String input = "";
+        CmdCouple couple = null;
+        String cmd = "";
         String content = "";
+        // 单个指令 执行情况
+        boolean point = true;
         try {
-            while (flag) {
-                if (!queue.isEmpty()) {
-                    content = (String) queue.poll();
+            while (true) {
+                if (!inQueue.isEmpty()) {
+                    content = inQueue.poll();
                     results.add(content);
 
                     System.out.println(content);
                 } else {
-                    if (inputList.isEmpty()) {
+                    if (!point || outQueue.isEmpty()) {
                         write(" ", os);
                         try {
                             Thread.sleep(1000);
@@ -58,46 +58,63 @@ public class ExchangeThread implements Runnable {
                             e.printStackTrace();
                         }
                     } else {
-                        input = inputList.poll();
-                        System.out.println("输入:" + input);
-                        write(input, os);
+                        couple = outQueue.poll();
+                        cmd = couple.getCmd();
+
+                        System.out.println("输入:" + cmd);
+                        write(cmd, os);
+                        point = false;
                     }
                 }
 
-                if (inputList.isEmpty() && content.contains(endFlag)) {
-                    if (!content.contains(endFlag + " " + input.split(" ")[0])) {
-                        System.out.println("输入完成!");
+
+                if (!point) {
+                    String endFlag = couple.getEndFlag();
+                    if (content.contains(endFlag) &&
+                            !content.contains(endFlag + " " + cmd.split(" ")[0])) {
+
+                        //System.out.println("输入完成!");
+                        point = true;
+                    }
+
+                    if (point && outQueue.isEmpty()) {
                         live = false;
-                        flag = false;
+
+                        System.out.println("指令结束!");
                         break;
                     }
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            flag = false;
             try {
                 TelnetUtil telnetUtil = SpringUtil.getBean("telnetUtil");
-                telnetUtil.init();
-                telnetUtil.doRunning(endFlag, input);
+
+                CmdCouple[] couples = telnetUtil.getCmdPool();
+                Queue<CmdCouple> queue = new LinkedList();
+                queue.addAll(Arrays.asList(couples));
+                queue.addAll(outQueue);
+
+                couples = queue.toArray(new CmdCouple[queue.size()]);
+                telnetUtil.doRunning(couples);
             } catch (Exception e1) {
                 e1.printStackTrace();
             }
         }
     }
 
-    public void setInputValue(String input) {
-        this.input = input;
+
+    public void setOutQueue(Queue<CmdCouple> outQueue) {
+        this.outQueue = outQueue;
     }
 
-    public void setQueue(Queue queue) {
-        this.queue = queue;
+    public void setInQueue(Queue<String> inQueue) {
+        this.inQueue = inQueue;
     }
 
-    public void setEndFlag(String endFlag) {
-        this.endFlag = endFlag;
+    public void setResults(List<String> results) {
+        this.results = results;
     }
-
 
     public void setOs(OutputStream os) {
         this.os = os;
@@ -126,15 +143,6 @@ public class ExchangeThread implements Runnable {
      */
     public boolean isLive() {
         return live;
-    }
-
-    /**
-     * 线程结束标志
-     *
-     * @return
-     */
-    public boolean isFlag() {
-        return flag;
     }
 
     public List<String> getResults() {
