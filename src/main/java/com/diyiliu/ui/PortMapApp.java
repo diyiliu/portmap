@@ -4,6 +4,7 @@ import com.diyiliu.support.config.Constant;
 import com.diyiliu.support.model.MappingResult;
 import com.diyiliu.support.model.Pair;
 import com.diyiliu.support.util.SpringUtil;
+import com.diyiliu.support.util.TelnetUtil;
 import com.diyiliu.ui.controller.MainController;
 import com.diyiliu.ui.service.DataLoadService;
 import com.diyiliu.ui.service.OperateService;
@@ -28,6 +29,8 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.IOException;
 
 /**
  * Description: PortMapApp
@@ -175,6 +178,15 @@ public class PortMapApp extends Application {
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
+
+        stage.setOnCloseRequest(windowEvent ->{
+            try {
+                TelnetUtil telnetUtil = SpringUtil.getBean("telnetUtil");
+                telnetUtil.shutdown();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     /**

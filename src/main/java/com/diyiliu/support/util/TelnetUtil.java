@@ -47,7 +47,7 @@ public class TelnetUtil {
     /**
      * 初始化登录操作
      */
-    public void init(){
+    public void init() {
         // 建立连接
         connect();
         // 账号登录
@@ -78,7 +78,7 @@ public class TelnetUtil {
     /**
      * 登录防火墙
      */
-    public void login(){
+    public void login() {
         logger.info("登录防火墙...");
 
         doRunning(cmdPool);
@@ -127,6 +127,11 @@ public class TelnetUtil {
     public boolean isOK() {
 
         return client.isConnected() && client.isAvailable();
+    }
+
+    public void shutdown() throws IOException {
+
+        client.disconnect();
     }
 
     public CmdCouple[] getCmdPool() {
